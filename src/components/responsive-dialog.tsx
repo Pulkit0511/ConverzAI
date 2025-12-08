@@ -52,7 +52,7 @@ export const ResponsiveDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{title}</DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {children}
       </DialogContent>
