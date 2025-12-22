@@ -11,7 +11,7 @@ import {
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { useMutation } from "@tanstack/react-query";
 import { LoaderIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CallUI } from "./call-ui";
 
 interface Props {
@@ -34,10 +34,10 @@ export const CallConnect = ({
     trpc.meetings.generateToken.mutationOptions()
   );
 
-  const [client, setClient] = useState<StreamVideoClient>();
+  const client = useMemo(() => {
+    if (!userId) return null;
 
-  useEffect(() => {
-    const _client = new StreamVideoClient({
+    return new StreamVideoClient({
       apiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY!,
       user: {
         id: userId,
@@ -46,34 +46,57 @@ export const CallConnect = ({
       },
       tokenProvider: generateToken,
     });
-
-    setClient(_client);
-
-    return () => {
-      _client.disconnectUser();
-      setClient(undefined);
-    };
   }, [userId, userName, userImage, generateToken]);
 
-  const [call, setCall] = useState<Call>();
+  const [isConnected, setIsConnected] = useState(false);
+
   useEffect(() => {
     if (!client) return;
+
+    let cancelled = false;
+
+    const connect = async () => {
+      await client.connectUser(
+        {
+          id: userId,
+          name: userName,
+          image: userImage,
+        },
+        generateToken
+      );
+
+      if (!cancelled) setIsConnected(true);
+    };
+
+    connect();
+
+    return () => {
+      cancelled = true;
+      setIsConnected(false);
+      client.disconnectUser();
+    };
+  }, [client, userId, userName, userImage, generateToken]);
+
+  const call: Call | null = useMemo(() => {
+    if (!client || !isConnected) return null;
 
     const _call = client.call("default", meetingId);
     _call.camera.disable();
     _call.microphone.disable();
-    setCall(_call);
 
+    return _call;
+  }, [client, isConnected, meetingId]);
+
+  useEffect(() => {
     return () => {
-      if (_call.state.callingState !== CallingState.LEFT) {
-        _call.leave();
-        _call.endCall();
-        setCall(undefined);
+      if (call && call.state.callingState !== CallingState.LEFT) {
+        call.leave();
+        call.endCall();
       }
     };
-  }, [client, meetingId]);
+  }, [call]);
 
-  if (!client || !call) {
+  if (!client || !isConnected || !call) {
     return (
       <div className="flex h-screen items-center justify-center bg-radial from-sidebar-accent to-sidebar">
         <LoaderIcon className="size-6 animate-spin text-white" />
