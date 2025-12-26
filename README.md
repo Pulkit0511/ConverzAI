@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ConverzAI
 
-## Getting Started
+A full-stack web application that enables AI-powered real-time video
+meetings with instruction-driven agents. Users can create custom AI
+agents, schedule meetings, conduct live video calls, and access meeting
+artifacts such as recordings, transcripts, and summaries.
 
-First, run the development server:
+## Overview
 
-```bash
+The platform is built as a production-style system with a focus on
+real-time communication, asynchronous processing, and clean API-driven
+architecture. AI capabilities are integrated as part of the meeting
+workflow rather than treated as standalone demos.
+
+## Key Features
+
+-   AI-powered real-time video meetings
+-   Custom instruction-based AI agents
+-   User authentication and authorization
+-   Agent and meeting CRUD workflows
+-   Call recording and video playback
+-   Automated meeting transcripts and summaries
+-   Persistent meeting history with statuses
+-   Mobile-responsive user interface
+
+## Tech Stack
+
+-   **Frontend:** Next.js 15, React 19, TypeScript, Tailwind CSS v4,
+    shadcn/ui
+-   **Backend:** Node.js, REST APIs
+-   **Real-time Video:** Stream Video SDK
+-   **AI Integration:** OpenAI APIs
+-   **Background Jobs:** Inngest
+-   **Authentication:** Better Auth
+
+## Architecture Notes
+
+-   Real-time video sessions are handled via the Stream Video SDK
+-   Long-running tasks such as transcription and summarization are
+    processed asynchronously using Inngest
+-   Webhooks are used to receive external event callbacks and trigger
+    background workflows
+-   API-first design for agents, meetings, and session lifecycle
+    management
+
+## Running the Project Locally
+
+For full functionality in development, the web app, webhook tunnel, and
+Inngest dev server must all be running.
+
+### Required
+
+npm install\
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Required for Full Functionality
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+npm run dev:webhook\
+npx --ignore-scripts=false inngest-cli@latest dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Optional Development Utilities
 
-## Learn More
+npm run db:push\
+npm run db
 
-To learn more about Next.js, take a look at the following resources:
+## Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Core functionality is implemented and usable. Ongoing work focuses on improving agent behavior and orchestration.
+- Some features require environment variables. A `.env.example` file will be provided in a future update.
